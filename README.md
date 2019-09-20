@@ -148,14 +148,14 @@ This method allows to use the default view of the SDK´s device registration dia
 ##### Syntax
       displayDeviceRegistrationDialog : function (success, fail);
 ##### Implementation
-		DetectIDCordovaPlugin.displayDeviceRegistrationDialog(
-			function(success) {
-				console.log("onSuccess", success);
-			},
-			function(error) {
-				console.log("onError", error);
-			}
-		);
+      DetectIDCordovaPlugin.displayDeviceRegistrationDialog(
+      	function(success) {
+      		console.log("onSuccess", success);
+      	},
+      	function(error) {
+      		console.log("onError", error);
+      	}
+      );
 
 ##### *setRegistrationViewProperties*
 This method allows to configure the default view of the SDK´s device registration dialog. The configurability of this default view is limited, so its use is not recommended. This method receives 3 different parameters: 2 response callbacks and an registrationViewProperties object.    
