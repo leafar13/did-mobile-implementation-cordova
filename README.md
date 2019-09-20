@@ -158,7 +158,7 @@ This method allows to use the default view of the SDK´s device registration dia
 		);
 
 ##### *setRegistrationViewProperties*
-	This method allows to configure the default view of the SDK´s device registration dialog. The configurability of this default view is limited, so its use is not recommended. This method receives 3 different parameters: 2 response callbacks and an registrationViewProperties object.    
+This method allows to configure the default view of the SDK´s device registration dialog. The configurability of this default view is limited, so its use is not recommended. This method receives 3 different parameters: 2 response callbacks and an registrationViewProperties object.    
 ##### Syntax
 	  setRegistrationViewProperties : function (success, fail);
 ##### Implementation
@@ -232,7 +232,7 @@ This method returns a string with the value of the token at the time of the quer
 
 <a name="push-auth"></a>
 ### Push authentication
-These feature allows to use push notifications to provide user authentication services through push notifications, as well as informative push alerts to relay information to the user. 
+These feature allows to use push notifications to provide user authentication services, as well as informative push alerts to relay information to the user. 
 The methods found below must be implemented only once right after the application has finished loading.
 
 ##### *setPushTransactionViewProperties*
@@ -345,8 +345,8 @@ This method receives 3 different parameters: 2 response callbacks and an Transac
       }, transactionJson);
 
 ##### *declinePushTransactionAction*
-executes the action to decline the received transaction; it is useful to implement or control the visualization of the Push transaction. 
-This method receives the TransactionInfo object as parameter to identify what transaction will be declined among all receide transactions.
+This method executes the action to decline the received transaction; it is useful to implement or control the visualization of the Push transaction. 
+It the TransactionInfo object as parameter to identify what transaction will be declined among all receide transactions.
 This method receives 3 different parameters: 2 response callbacks and an TransactionInfo object.
 ##### Syntax
       declinePushTransactionAction : function(success, fail, transactionJson)
@@ -423,7 +423,7 @@ This method receives 2 different parameters: 2 response callbacks.
           });
 	  
 ##### *approvePushAlert*
-executes the action to approve the received alert, it is useful to implement or control the Push transaction visualization. 
+This method executes the action to approve the received alert, it is useful to implement or control the Push transaction visualization. 
 The listener will return a transactionJson object, which will contain the information necessary to handle one or multiple received alerts.
 This method receives 3 different parameters: 2 response callbacks and an transactionJson object.    
 ##### Syntax
