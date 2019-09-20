@@ -46,7 +46,9 @@ The examples used below are provided using:
 On this section, you can review step by step the integration of the SDK and its features.
 
 [Initialization](#Init)
+
 [Device registration](#dev-reg)
+
 [Integrating the authentication services](#int-auth)
 
 <a name="Init"></a>
@@ -190,6 +192,7 @@ This method allows to use the default view of the SDK´s device registration dia
 With the initialization and registration process finished, the SDK is ready to start using its authentication services.
 
 [OTP Authentication](#OTP-auth)
+
 [Push Authentication](#push-auth)
 
 <a name="OTP-auth"></a>
