@@ -206,13 +206,13 @@ This method Calls the server to update the lifetime of the token for a specific 
       updateTokenTimeStepValue  : function (success, fail, account);
 ##### Implementation
       DetectIDCordovaPlugin.getAccounts(function(accounts) {
-      let account = accounts[0];
-      DetectIDCordovaPlugin.updateTokenTimeStepValue(function() {
-      console.log("onSuccess", "updateTokenTimeStepValue");
-      },
-      function(error) {
-      console.log("onError", error);
-      }, account);
+	      let account = accounts[0];
+	      DetectIDCordovaPlugin.updateTokenTimeStepValue(function() {
+	      console.log("onSuccess", "updateTokenTimeStepValue");
+	      },
+	      function(error) {
+	      console.log("onError", error);
+	      }, account);
       });
 
 ##### *getTokenValue*
