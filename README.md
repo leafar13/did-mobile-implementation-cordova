@@ -1,5 +1,5 @@
 ![ScreenShot](img/cyxtera-header.png)
-# DetectID-SDK: Phonegap Integration
+# DetectID-SDK: Cordova Integration
 
 [Description](#desc)
 
@@ -12,12 +12,14 @@
 <a name="desc"></a>
 # Description
 
-This repository is meant to help you understand the implementation of the native libraries of DetectID-SDK using Phonegap. This repository reviews the initialization of the SDK, account registration processes and authentication services. Notice that all the methods of the SDK are accessed from the *DetectIDCordovaPlugin* class.
+This repository is meant to help you understand the implementation of the native libraries of DetectID-SDK using Cordova. This repository reviews the initialization of the SDK, account registration processes and authentication services. Notice that all the methods of the SDK are accessed from the *DetectIDCordovaPlugin* class.
 
 <a name="tech-desc"></a>
 # Technical Information
 The native libraries of DetectID-SDK have the following specifications:
 
+## DetectID Mobile SDK version
+- 7.3.1
 
 ## iOS
 
