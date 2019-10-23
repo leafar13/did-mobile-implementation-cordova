@@ -65,6 +65,8 @@ On this section, you can review step by step the integration of the SDK and its 
 
 [Device registration](#dev-reg)
 
+[Account management](#accmana)
+
 [Integrating the authentication services](#int-auth)
 
 <a name="prelim"></a>
@@ -294,7 +296,7 @@ This method allows to configure the default view of the SDK´s device registrati
             console.log("onError", error);
         }, registrationViewProperties);
 
-<a name="int-auth"></a>
+<a name="accmana"></a>
 
 ## Account Management
 This service allows the SDK to manage different accounts through the customer application. This section contains the methods provided in this SDK to manage said accounts. 
@@ -333,7 +335,9 @@ This mthod is used to update the user name of an account. This method uses the p
      }, function(response) {
      	...
      }, newUsername, currentAccount);
-	 
+
+<a name="int-auth"></a>
+
 ## Integrating the authentication services         
 With the initialization and registration process finished, the SDK is ready to start using its authentication services.
 
@@ -598,4 +602,3 @@ DID SDK, didsdk-admin@cyxtera.com
 [//]: #
 
 [cyxtera]: <https://www.cyxtera.com>
-
