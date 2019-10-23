@@ -1,4 +1,4 @@
-![ScreenShot](img/cyxtera-header.png)
+![Cyxtera_logo](img/cyxtera-header.png)
 # DetectID-SDK: Cordova Integration
 
 [Description](#desc)
@@ -20,7 +20,18 @@ The native libraries of DetectID-SDK have the following specifications:
 
 ## DetectID Mobile SDK version
 - iOS: 7.3.1
+	- did_sdk_data_ios.framework
+	- did_sdk_encrypt_iOS.framework
+	- did_sdk_tokens_ios.framework
+	- didm_auth_sdk_iOS.framework
+	
 - Android: 7.3.2
+	- did-data-7.3.2.aar
+    - did-encryptor-7.3.2.aar
+    - did-tokens-7.3.2.aar
+    - mobile-commons-1.0.0.aar
+    - shortcut-1.0.0.aar
+    - didm_auth_sdk_v7.3.2.jar
 
 ## iOS
 
@@ -48,13 +59,69 @@ The examples used below are provided using:
 # DetectID-SDK Integration
 On this section, you can review step by step the integration of the SDK and its features.
 
+[Preliminary steps](#prelim)
+
 [Initialization](#Init)
 
 [Device registration](#dev-reg)
 
 [Integrating the authentication services](#int-auth)
 
+<a name="prelim"></a>
+
+## Preliminary Steps
+It is necessary to implement a series of preliminary steps to ensure the proper functioning of the SDK in the secured application. Follow the instructions foundin this section to carry out said steps. 
+
+### Native SDK libraries
+Copy the native libraries of the SDK into the project of the secured application. Please follow the steps below.
+
+1. After cloning or downloading the **DetectID Mobile SDK for Cordova** project, create a folder named *libs* inside the main folder *cordova-plugin-did-authenticator-sdk*.
+2. Inside the *libs* folder, create a new folder for each operating system (Android and iOS).
+
+![Libs folders](img/LibsFolders.png)
+
+3. Inside the *Android* folder, copy and paste the *.jar* and *.aar* files shown in the picture below.
+
+![Android libraries screenshot](img/AndroidLibsScreenshot.png)
+
+4. Inside the *iOS* folder, copy and paste the *.framework* files shown in the picture below.
+
+![iOS libraries screenshot](img/iOSLibsScreenshot.png)
+
+### Creating the integration application
+1. Create a folder in a drive or location of preference. This is the folder where the project will be created. 
+2. In the terminal, go to the location of the previously created folder.
+3. Run the following command to create the project. 
+
+        sudo cordova create NameYourProject
+
+### Adding the Cordova plugin to the integration project
+1. Using the terminal, enter the folder where the secured application was created.
+2. Run the following command in the terminal to add the plugin to the integration application.
+
+        sudo cordova plugin add /PATH_TO_THE_PLUGIN/did-mobile-implementation-cordova/cordova-plugin-did-authenticator-sdk
+
+3. Add the platform the application is going to run in. Inside the *platforms* folder, create a folder for each platform. 
+
+        sudo cordova platform add ios
+        sudo cordova platform add android 
+
+4. Run the following command to carry out the initial compilation. This command must be executed to compile the application after making changes and see them reflected in the newer compilation. 
+
+        sudo cordova build ios
+        sudo cordova build android
+
+5. Steps for Android only: 
+
+    * Add the **Application** in the manifest of the **app** module
+
+            android:name="android.support.multidex.MultiDexApplication"
+    *  Add the following line to the gradle of the project
+
+            classpath'com.google.gms:google-services:4.3.0'
+   
 <a name="Init"></a>
+
 ## Initialization
 This process starts all the services of the SDK while evaluating that its version is supported by the server. This process has to be done once per session when the application has started.
 
@@ -182,7 +249,7 @@ This listener must be set to allow the registration success callbacks to handle 
 ### Additional device registration methods
 
 The methods found below must be implemented only once right after the application has finished loading. Their implementation is optional. 
-##### *displayDeviceRegistrationDialog*
+#### *displayDeviceRegistrationDialog*
 This method allows to use the default view of the SDK´s device registration dialog. The configurability of this default view is limited, so its use is not recommended. This method receives 2 parameters: 2 response callbacks.
 ##### Syntax
       displayDeviceRegistrationDialog : function (success, fail);
@@ -196,7 +263,7 @@ This method allows to use the default view of the SDK´s device registration dia
       	}
       );
 
-##### *setRegistrationViewProperties*
+#### *setRegistrationViewProperties*
 This method allows to configure the default view of the SDK´s device registration dialog. The configurability of this default view is limited, so its use is not recommended. This method receives 3 different parameters: 2 response callbacks and an registrationViewProperties object.    
 ##### Syntax
 	  setRegistrationViewProperties : function (success, fail);
@@ -275,6 +342,7 @@ With the initialization and registration process finished, the SDK is ready to s
 [Push Authentication](#push-auth)
 
 <a name="OTP-auth"></a>
+
 ### OTP
 This feature allows to authenticate the user through one-time passwords generated by the SDK inside the secured entity's mobile application.
 
@@ -307,6 +375,7 @@ This method returns a string with the value of the token at the time of the quer
 	  );
 
 <a name="push-auth"></a>
+
 ### Push authentication
 These feature allows to use push notifications to provide user authentication services, as well as informative push alerts to relay information to the user. 
 The methods found below must be implemented only once right after the application has finished loading.
@@ -382,7 +451,7 @@ This method receives 2 different parameters: 2 response callbacks. The success c
 ##### Syntax
       setPushTransactionOpenListener : function(success, fail)
 ##### Implementation
-	  //The following is an implementation example for this listener; however, the secured entity is free to implement it as they see fit. It is mandatory to set the QuickAction listener for each action as seen below
+	  <!-- The following is an implementation example for this listener; however, the secured entity is free to implement it as they see fit. It is mandatory to set the QuickAction listener for each action as seen below -->
    	  var pushTransactionOpenListener = function(pushTransaction) {
 			var r = confirm("xxxxxx");
 			if (r == true) {
