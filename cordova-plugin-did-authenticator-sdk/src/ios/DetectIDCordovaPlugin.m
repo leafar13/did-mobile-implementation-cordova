@@ -98,5 +98,4 @@
     [pluginManager setRegistrationViewPropertiesManager:command withPlugin:self];
 }
 
-
 @end

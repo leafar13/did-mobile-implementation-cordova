@@ -15,6 +15,8 @@
 @interface DIDPlugRegistrationApi : CDVPlugin <DeviceRegistrationServerResponseDelegate>
 
 @property (nonatomic,strong) __block CDVInvokedUrlCommand *commandDeviceRegistrationServerResponseListener;
+@property (nonatomic, retain) CDVInvokedUrlCommand *currentCommand;
+@property (nonatomic, strong) NSString* myCallbackId;
 
 - (void) initDIDServerWithParams:(CDVInvokedUrlCommand*)command;
 

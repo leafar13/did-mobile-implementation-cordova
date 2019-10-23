@@ -220,5 +220,7 @@ DerivedData/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 
+## Native Libraries
+cordova-plugin-did-authenticator-sdk/libs/*
 
 # End of https://www.gitignore.io/api/xcode,android,androidstudio,apachecordova

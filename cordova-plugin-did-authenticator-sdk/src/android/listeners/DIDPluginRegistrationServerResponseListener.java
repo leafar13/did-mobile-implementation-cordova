@@ -20,7 +20,6 @@ public class DIDPluginRegistrationServerResponseListener implements DeviceRegist
     @Override
     public void onRegistrationServerResponse(String response) {
         PluginResult result = new PluginResult(PluginResult.Status.OK, response);
-        result.setKeepCallback(true);
         callbackContext.sendPluginResult(result);
     }
 }

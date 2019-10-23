@@ -32,15 +32,22 @@
 }
 
 -(void)confirmPushTransactionAction: (CDVInvokedUrlCommand*)command{
-
-    pushTransactionManager = [[DIDPlugPushTransactionManager alloc]init];    
-    [pushTransactionManager confirmPushTransactionAction:command withPlugin:self];
+    __block CDVInvokedUrlCommand *commandBlock = command;
+    
+    [self.commandDelegate runInBackground:^{
+        [[DIDPluginTransactionServerResponseListener alloc] initWithCommand:commandBlock withPlugin:self]; //setPushTransactionServerResponseListener
+        self->pushTransactionManager = [[DIDPlugPushTransactionManager alloc]init];
+        [self->pushTransactionManager confirmPushTransactionAction:commandBlock withPlugin:self];
+    }];
 }
 
 -(void)declinePushTransactionAction: (CDVInvokedUrlCommand*)command{
-
-    pushTransactionManager = [[DIDPlugPushTransactionManager alloc]init];    
-    [pushTransactionManager declinePushTransactionAction:command withPlugin:self];
+    __block CDVInvokedUrlCommand *commandBlock = command;
+    [self.commandDelegate runInBackground:^{
+        [[DIDPluginTransactionServerResponseListener alloc] initWithCommand:commandBlock withPlugin:self]; //setPushTransactionServerResponseListener
+        self->pushTransactionManager = [[DIDPlugPushTransactionManager alloc]init];
+        [self->pushTransactionManager declinePushTransactionAction:commandBlock withPlugin:self];
+    }];
 }
 
 -(void)setPushAuthenticationResponseAdditionalInfo: (CDVInvokedUrlCommand*)command{
@@ -62,8 +69,10 @@
 }
 
 -(void)setPushTransactionServerResponseListener: (CDVInvokedUrlCommand*)command{
-    
-    [[DIDPluginTransactionServerResponseListener alloc] initWithCommand:command withPlugin:self];
+    __block CDVInvokedUrlCommand *commandBlock = command;
+    [self.commandDelegate runInBackground:^{
+    [[DIDPluginTransactionServerResponseListener alloc] initWithCommand:commandBlock withPlugin:self];
+        }];
 }
 
 -(void)setPushTransactionOpenListener: (CDVInvokedUrlCommand*)command{

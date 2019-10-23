@@ -16,6 +16,8 @@ public class DIDPlugAccountsApi extends CordovaPlugin {
     private Context myContext;
 
     private final String GET_ACCOUNTS = "getAccounts";
+    private final String SET_ACCOUNT_USERNAME = "setAccountUsername";
+    private final String REMOVE_ACCOUNT = "removeAccount";
 
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
@@ -29,6 +31,12 @@ public class DIDPlugAccountsApi extends CordovaPlugin {
 
         if (action.equals(GET_ACCOUNTS)) {
             DIDPlugAccountsManager.getAccounts(myContext, callbackContext);
+        }
+        if (action.equals(SET_ACCOUNT_USERNAME)) {
+            DIDPlugAccountsManager.setAccountUsername(myContext, args, callbackContext);
+        }
+        if (action.equals(REMOVE_ACCOUNT)) {
+            DIDPlugAccountsManager.removeAccount(myContext, args, callbackContext);
         }
 
         return true;

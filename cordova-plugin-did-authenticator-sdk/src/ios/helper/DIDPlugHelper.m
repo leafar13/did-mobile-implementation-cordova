@@ -16,6 +16,14 @@
     PushTransactionViewProperties* pushTransactionVP = [[PushTransactionViewProperties alloc]init];
     pushTransactionVP.CONFIRM = [json valueForKeyPath: CONFIRM_PROPERTIES] ? : nil;
     pushTransactionVP.DECLINE = [json valueForKeyPath: DECLINE_PROPERTIES] ? : nil;
+    NSString *quickActionParameter = ([json valueForKeyPath: ENABLE_NOTIFICATION_QUICK_ACTIONS_PROPERTIES] ? : nil);
+    BOOL quickAction = NO;
+    
+    if (nil != quickActionParameter){
+        quickAction = ([quickActionParameter boolValue] ? YES : NO);
+    }
+    
+    pushTransactionVP.ENABLE_NOTIFICATION_QUICK_ACTIONS = quickAction;
     pushTransactionVP.SERVER_RESPONSE_CODE_96 = [json valueForKeyPath: SERVER_RESPONSE_CODE_96_PROPERTIES] ? : nil;
     pushTransactionVP.SERVER_RESPONSE_CODE_98 = [json valueForKeyPath: SERVER_RESPONSE_CODE_98_PROPERTIES] ? : nil;
     pushTransactionVP.SERVER_RESPONSE_CODE_99 = [json valueForKeyPath: SERVER_RESPONSE_CODE_99_PROPERTIES] ? : nil;

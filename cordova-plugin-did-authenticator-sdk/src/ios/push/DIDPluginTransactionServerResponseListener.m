@@ -17,6 +17,7 @@
 {
     self = [super init];
     if (self) {
+        self.myPushListenerCallbackId = command.callbackId;
         commandPluginTransactionServerResponseListener = command;
         pushPlugin = plugin;
         
@@ -27,9 +28,8 @@
 
 - (void)onPushTransactionServerResponse:(NSString *)result {
     
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:result];
-    [pluginResult setKeepCallbackAsBool:YES];
-    [pushPlugin.commandDelegate sendPluginResult:pluginResult callbackId:commandPluginTransactionServerResponseListener.callbackId];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: result];
+    [pushPlugin.commandDelegate sendPluginResult:pluginResult callbackId: _myPushListenerCallbackId];
 }
 
 @end

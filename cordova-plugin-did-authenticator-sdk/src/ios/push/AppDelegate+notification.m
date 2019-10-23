@@ -66,6 +66,15 @@ static char launchNotificationKey;
     [[[DetectID sdk] PUSH_API] setPushAlertOpenDelegate:self];
     [[[DetectID sdk] PUSH_API] enablePushTransactionServerResponseAlerts:NO];
     
+    
+     PushTransactionViewProperties* pushTransactionVP = [[PushTransactionViewProperties alloc]init];
+     pushTransactionVP.CONFIRM =  @"Confirm";
+     pushTransactionVP.DECLINE =  @"Cancel";
+     pushTransactionVP.ENABLE_NOTIFICATION_QUICK_ACTIONS = YES;
+     
+     [[[DetectID sdk] PUSH_API] setPushTransactionViewProperties: pushTransactionVP];
+     
+    
     return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }
 

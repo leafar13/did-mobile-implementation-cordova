@@ -114,15 +114,15 @@ public class DIDPlugPushTransactionManager {
     public static void confirmPushTransactionAction(Context myContext, JSONArray args, CallbackContext callbackContext) throws JSONException {
         TransactionInfo transactionInfo = new Gson().fromJson(args.getString(0), TransactionInfo.class);
         transactionInfo.type = TransactionInfo.TransactionType.PUSH_AUTHENTICATION;
+        DetectID.sdk(myContext).PUSH_API.setPushTransactionServerResponseListener(new DIDPluginTransactionServerResponseListener(callbackContext));
         DetectID.sdk(myContext).PUSH_API.confirmPushTransactionAction(transactionInfo);
-        callbackContext.success();
     }
 
     public static void declinePushTransactionAction(Context myContext, JSONArray args, CallbackContext callbackContext) throws JSONException {
         TransactionInfo transactionInfo = new Gson().fromJson(args.getString(0), TransactionInfo.class);
         transactionInfo.type = TransactionInfo.TransactionType.PUSH_AUTHENTICATION;
+        DetectID.sdk(myContext).PUSH_API.setPushTransactionServerResponseListener(new DIDPluginTransactionServerResponseListener(callbackContext));
         DetectID.sdk(myContext).PUSH_API.declinePushTransactionAction(transactionInfo);
-        callbackContext.success();
     }
 
     public static void setPushAuthenticationResponseAdditionalInfo(Context myContext, JSONArray args, CallbackContext callbackContext) throws JSONException {

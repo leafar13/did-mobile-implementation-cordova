@@ -19,13 +19,14 @@ This repository is meant to help you understand the implementation of the native
 The native libraries of DetectID-SDK have the following specifications:
 
 ## DetectID Mobile SDK version
-- 7.3.1
+- iOS: 7.3.1
+- Android: 7.3.2
 
 ## iOS
 
- - Base SDK compiled: iOS 12.2
- - Xcode: 10.2.1
- - OS versions compatibility: From 10 to 12.2.
+ - Base SDK compiled: iOS 12.4.2
+ - Xcode: 10.3
+ - OS versions compatibility: From 10 to 12.4.2.
  - Programing Language: Objective - C.
 
 ## Android
@@ -64,6 +65,19 @@ This process starts all the services of the SDK while evaluating that its versio
 
  - Callback functions *success* and *fail*.
  - Object initParams, this object contains the URL of the server that receives the registration information.
+ 
+#### Callback implementation
+Set the required listeners only once when receiving the success callback. A list of the methods that may be set in this callback is proveded below:
+
+ - setDeviceRegistrationServerResponseListener
+ - setRegistrationViewProperties
+ - setPushTransactionViewProperties
+ - setPushAlertViewProperties
+ - setPushTransactionReceiveListener
+ - setPushQuickActionServerResponseListener
+ - setPushTransactionOpenListener
+ - setPushAlertOpenListener
+ - setPushAuthenticationResponseAdditionalInfo
 
 #### Implementation example
      var initParams = '{"url": "http://URL:PORT/detect/public/registration/mobileServices.htm?code="}';
@@ -89,8 +103,8 @@ This method registers the device through a code sent via e-mail, SMS or a text m
 
 #### Implementation example
      var code = document.getElementById("inputRegistrationCode").value;
-     DetectIDCordovaPlugin.deviceRegistrationByCode(function(successRegistrationResponse) {
-         console.log("successRegistrationResponse", successRegistrationResponse);
+     DetectIDCordovaPlugin.deviceRegistrationByCode(function(responseCode) {
+         console.log("responseCode", responseCode);
      }, function(failedRegistrationResponse) {
          console.log("failedRegistrationResponse", failedRegistrationResponse)
      }, code);
@@ -105,14 +119,49 @@ This method registers the device through a QR code presented through an external
  - Callback functions *success* and *fail*.
 
 #### Implementation example
-     DetectIDCordovaPlugin.deviceRegistrationByQRCode(function(successRegistrationResponse) {
-         console.log("successRegistrationResponse", successRegistrationResponse);
+     DetectIDCordovaPlugin.deviceRegistrationByQRCode(function(responseCode) {
+         console.log("responseCode", responseCode);
      }, function(failedRegistrationResponse) {
          console.log("failedRegistrationResponse", failedRegistrationResponse)
      });
 
+#### Android specific configuration
+In Android, it is necessary to use an external resource to use the camera of the mobile device in QR Code registration procedures. In this implementation, a Cordova additional pulgin is used for this purpose: however, the secured entity is free to use the camera of the device and to obtain the required permission. The details of the plugin and permissions used in this implementation can be found below:
+ - Plugin name: cordova-plugin-android-permissions
+ - Plugin link: https://www.npmjs.com/package/cordova-plugin-permission
+ - Implementation JavaScript: This implementation code must be implemented only once when initializing the application: 
+	var permissions = cordova.plugins.permissions;
+		permissions.requestPermission(permissions.CAMERA, success, error);
+
+		function error() {
+		  console.warn('Camera permission is not turned on');
+		}
+
+		function success(status) {
+		  if(!status.hasPermission) {
+		      error();
+		   }
+		}
+
+ - Add the following line of code to the gradle of the project:
+	classpath 'com.google.gms:google-services:4.3.0'
+	
 ### Registration Response
-When the registration process finishes, the response from the server must be retreived using the listener setDeviceRegistrationServerResponseListener. This listener must be used for both registration services. 
+The success callbacks of both registration methods receive the response codes of the registration process. The list of response codes can be found below: 
+	
+#### Response
+ - 98 Empty Parameter
+ - 99 System Error
+ - 1002 The activation code was already used
+ - 1010 Operating System not supported
+ - 1011 Activation code does not exist
+ - 1012 Activation code has expired
+ - 1013 client has reached maximum number of devices allowed
+ - 1014 The device is already registered
+ - 1020 Successful registration
+ 
+### Registration Response Listener
+This listener must be set to allow the registration success callbacks to handle the server response codes. 
 
 #### Syntax
      setDeviceRegistrationServerResponseListener : function (success, fail);
@@ -129,18 +178,6 @@ When the registration process finishes, the response from the server must be ret
               console.log("onError", error);
           }
       );
-	
-#### Response
-
- - 98 Parameter empty
- - 99 System Error
- - 1002 The activation code was already used
- - 1010 Operative System not supported
- - 1011 Activation code does not exist
- - 1012 Activation code has expired
- - 1013 client has reached maximum number of devices allowed
- - 1014 The device is already registered
- - 1020 Successful registration
 
 ### Additional device registration methods
 
@@ -191,6 +228,45 @@ This method allows to configure the default view of the SDK´s device registrati
         }, registrationViewProperties);
 
 <a name="int-auth"></a>
+
+## Account Management
+This service allows the SDK to manage different accounts through the customer application. This section contains the methods provided in this SDK to manage said accounts. 
+
+#### *getAccounts*
+Allows to retreive the list of registered accounts.
+##### Syntax
+	 getAccounts : function (accountList);
+	
+##### Implementation
+   	 DetectIDCordovaPlugin.getAccounts(function(accountList) {
+            ...
+   	 });	
+
+#### *removeAccount*
+This method can be used to delete an account. This method uses the parameter currentAccount which corresponds to the account that is about to be erased from the device. 
+##### Syntax
+	 removeAccount: function(success, fail, currentAccount);
+##### Implementation
+	 let currentAccount = accountList[index];
+		DetectIDCordovaPlugin.removeAccount(function(response){
+	          ...
+     }, function(response) {
+	          ...
+	 }, currentAccount);
+
+#### *setAccountUsername*
+This mthod is used to update the user name of an account. This method uses the parameter currentAccount which corresponds to the account that is about to be modified. 
+##### Syntax
+	 setAccountUsername: function (success, fail, username, currentAccount);
+##### Implementation
+	 let currentAccount = accountList[index];
+		let newUsername = "xxxxxx";
+		DetectIDCordovaPlugin.setAccountUsername(function(response){
+     	...
+     }, function(response) {
+     	...
+     }, newUsername, currentAccount);
+	 
 ## Integrating the authentication services         
 With the initialization and registration process finished, the SDK is ready to start using its authentication services.
 
@@ -202,102 +278,93 @@ With the initialization and registration process finished, the SDK is ready to s
 ### OTP
 This feature allows to authenticate the user through one-time passwords generated by the SDK inside the secured entity's mobile application.
 
-##### updateTokenTimeStepValue
-This method Calls the server to update the lifetime of the token for a specific account. It receives 3 different parameters: 2 response callbacks and an account object.
+#### *updateTokenTimeStepValue*
+This method Calls the server to update the lifetime of the token for a specific account. It receives 3 different parameters: 2 response callbacks and an currentAccount object. This object corresponds to the account that will receive the OTP timestep change.
 ##### Syntax
       updateTokenTimeStepValue  : function (success, fail, account);
+ 
 ##### Implementation
-      DetectIDCordovaPlugin.getAccounts(function(accounts) {
-	      let account = accounts[0];
-	      DetectIDCordovaPlugin.updateTokenTimeStepValue(function() {
-	      console.log("onSuccess", "updateTokenTimeStepValue");
-	      },
-	      function(error) {
-	      console.log("onError", error);
-	      }, account);
-      });
+      let currentAccount = accountList[index];
+			DetectIDCordovaPlugin.updateTokenTimeStepValue(function(response) {
+					...
+				}, function(error) {
+					...
+				}, currentAccount
+			);
 
-##### *getTokenValue*
-This method returns a string with the value of the token at the time of the query for the specified account. It receives 3 different parameters: 2 response callbacks and an account object.
+#### *getTokenValue*
+This method returns a string with the value of the token at the time of the query for the specified account. It receives 3 different parameters: 2 response callbacks and a currentAccount object. This object corresponds to the account that will receive the OTP.
 ##### Syntax
       getTokenValue  : function (success, fail, account);
+ 
 ##### Implementation
-      DetectIDCordovaPlugin.getAccounts(function(accounts) {
-          let account = accounts[0];
-          DetectIDCordovaPlugin.getTokenValue(function() {
-          console.log("onSuccess", "getTokenValue");
-      },
-      function(error) {
-          console.log("onError", error);
-          }, account);
-      });
+      let currentAccount = accountList[index];
+	  DetectIDCordovaPlugin.getTokenValue(function(tokenValue) {
+					...
+			}, function(error) {
+					...
+			}, currentAccount
+	  );
 
 <a name="push-auth"></a>
 ### Push authentication
 These feature allows to use push notifications to provide user authentication services, as well as informative push alerts to relay information to the user. 
 The methods found below must be implemented only once right after the application has finished loading.
 
-##### *setPushTransactionViewProperties*
+#### *setPushTransactionViewProperties*
 This method allows to configure the default view of the SDK´s push transaction service. This method receives 3 different parameters: 2 response callbacks and an transactionViewProperties object.    
 ##### Syntax
-      setPushTransactionViewProperties : function (success, fail);
+      setPushTransactionViewProperties : function (success, fail, transactionViewProperties);
 ##### Implementation
       var transactionViewProperties = {
-          "TITLE": "Configured title",
-          "MESSAGE": "Configured message",
-          "CONFIRM": "Accept push",
-          "DECLINE": "Reject push",
-          "SERVER_RESPONSE_CODE_96": "Code 96",
-          "SERVER_RESPONSE_CODE_98": "Code 98",
-          "SERVER_RESPONSE_CODE_99": "Code 99",
-          "SERVER_RESPONSE_CODE_1001": "Code 1001",
-          "SERVER_RESPONSE_CODE_1002": "Code 1002",
-          "SERVER_RESPONSE_CODE_1010": "Code 1010",
-          "SERVER_RESPONSE_CODE_1012": "Code 1012",
-          "SERVER_RESPONSE_CODE_1020": "Code 1020",
-         "SERVER_RESPONSE_CODE_1021": "Code 1021",
-          "SERVER_RESPONSE_CODE_1022": "Code 1022",
-          "CAMERA_PERMISSION_REQUEST": "CAMERA_PERMISSION_REQUEST",
-          "CAMERA_PERMISSION_SETTINGS": "CAMERA_PERMISSION_SETTINGS",
-          "CAMERA_PERMISSION_CANCEL": "CAMERA_PERMISSION_CANCEL"
-      }
+			"TITLE": "Configured title",
+			"MESSAGE": "Configured message",
+			"CONFIRM": "Accept push",
+			"DECLINE": "Reject push",
+			"ENABLE_NOTIFICATION_QUICK_ACTIONS" : "true", // true | false
+	  };
 
-      DetectIDCordovaPlugin.setPushTransactionViewProperties (
-          function(success) {
-              console.log("onSuccess", success);
-          },
-          function(error) {
-              console.log("onError", error);
-          }, transactionViewProperties);
-
-##### *setPushAlertViewProperties*
+	  DetectIDCordovaPlugin.setPushTransactionViewProperties ( function(success) {
+			 ...
+			}, function(error) {
+			 ...
+			}, transactionViewProperties
+	  );
+     
+#### *setPushAlertViewProperties*
 This method allows to configure the default view of the SDK´s push alert service. This method receives 3 different parameters: 2 response callbacks and an alertViewProperties object.
 ##### Syntax
-      setPushAlertViewProperties  : function (success, fail);
+      setPushAlertViewProperties  : function (success, fail, alertViewProperties);
 ##### Implementation
       var alertViewProperties = {
-          "APPROVE": "Accept"
-      }
-      DetectIDCordovaPlugin.setPushAlertViewProperties (
-          function(success) {
-              console.log("onSuccess", success);
-          },
-          function(error) {
-            console.log("onError", error);
-          }, alertViewProperties);
+			"APPROVE": "Accept"
+	  }
 
-##### *setPushTransactionServerResponseListener*
-This method returns the server response code depending on the validation of each answered Push transaction. This method receives 2 different parameters: 2 response callbacks. 
+	  DetectIDCordovaPlugin.setPushAlertViewProperties ( function(success) {
+			...
+			}, function(error) {
+			...
+			}, alertViewProperties
+	  );			
+
+#### *setPushQuickActionServerResponseListener*
+This method is used to obtain the responsed codes of Push QUick Actions. Each time a transaction is accepted or rejected, it is necessary to set the corresponding listener to receive the response codes again. If said listener is not set, it will not be possible to accept or reject transactions. This method receives 2 different parameters: 2 response callbacks. 
 ##### Syntax
-      setPushTransactionServerResponseListener : function(success, fail)
+      setPushQuickActionServerResponseListener : function(success, fail);
 ##### Implementation
-      DetectIDCordovaPlugin.setPushTransactionServerResponseListener(function(successTransactionServerResponseListener) {
-          console.log("successTransactionServerResponseListener", successTransactionServerResponseListener);
-      }, function(failTransactionServerResponseListener) {
-          console.log("failTransactionServerResponseListener", failTransactionServerResponseListener)
-      });
+	  var failResponse = function(message) {
+			alert(message, "Fail Response");
+			DetectIDCordovaPlugin.setPushQuickActionServerResponseListener(successResponseQuickAction, failResponse); // get response listener from QuickActions
+	  };
 
-##### *setPushTransactionReceiveListener*
+	  var successResponseQuickAction = function(responseCode) {
+			alert(responseCode, "Quick Actions Response");
+			DetectIDCordovaPlugin.setPushQuickActionServerResponseListener(successResponseQuickAction, failResponse); // get response listener from QuickActions
+	  };
+
+	  DetectIDCordovaPlugin.setPushQuickActionServerResponseListener(successResponseQuickAction, failResponse);
+
+#### *setPushTransactionReceiveListener*
 This listener is executed every time a Push transaction is received in the application. It is useful when the company wants to implement any additional functionality when receiving the notification. 
 This method receives 2 different parameters: 2 response callbacks. 
 ##### Syntax
@@ -309,19 +376,31 @@ This method receives 2 different parameters: 2 response callbacks.
           console.log("failTransactionReceiveListener", failTransactionReceiveListener)
       });
 	  
-##### *setPushTransactionOpenListener*
+#### *setPushTransactionOpenListener*
 This listener is executed every time a Push transaction is opened from the Notifications panel; useful when the company wants to implement any additional functionality when the notification opens. 
-This method receives 2 different parameters: 2 response callbacks. 
+This method receives 2 different parameters: 2 response callbacks. The success callback contains the parameter pushTransactionMsg. This parameter returns all the information in the Pushmessage when the notification is opened. This information ca be used to build the push transaction view. The QuickAction listener must be set each time a transaction is accepted or rejected in order to receive future push transaction messages. 
 ##### Syntax
       setPushTransactionOpenListener : function(success, fail)
 ##### Implementation
-      DetectIDCordovaPlugin.setPushTransactionOpenListener(function(successTransactionOpenListener) {
-          console.log("successTransactionOpenListener", successTransactionOpenListener);
-      }, function(failTransactionOpenListener) {
-          console.log("failTransactionOpenListener", failTransactionOpenListener)
-      });
+	  //The following is an implementation example for this listener; however, the secured entity is free to implement it as they see fit. It is mandatory to set the QuickAction listener for each action as seen below
+   	  var pushTransactionOpenListener = function(pushTransaction) {
+			var r = confirm("xxxxxx");
+			if (r == true) {
+			DetectIDCordovaPlugin.confirmPushTransactionAction(function(responseCode){
+						alert(responseCode,"Confirm Transaction Response");
+						DetectIDCordovaPlugin.setPushQuickActionServerResponseListener(successResponseQuickAction, failResponse); // get response listener from QuickActions
+				}, failResponse, pushTransaction);
+			} else {
+			DetectIDCordovaPlugin.declinePushTransactionAction(function(responseCode){
+						app.dialog.alert(responseCode,"Declined Transaction Response");
+						DetectIDCordovaPlugin.setPushQuickActionServerResponseListener(successResponseQuickAction, failResponse); // get response listener from QuickActions
+					}, failResponse, pushTransaction);
+			}
+   	  };
+   
+   	  DetectIDCordovaPlugin.setPushTransactionOpenListener(pushTransactionOpenListener, failResponse);
 
-##### *setPushTransactionActionListener*
+#### *setPushTransactionActionListener*
 This method overrides the methods to confirm or reject the Push transaction. It is useful when implementing an additional functionality in these methods. 
 This method receives 2 different parameters: 2 response callbacks. 
 ##### Syntax
@@ -333,7 +412,7 @@ This method receives 2 different parameters: 2 response callbacks.
           console.log("failTransactionActionListener", failTransactionActionListener)
       });
 
-##### *confirmPushTransactionAction*
+#### *confirmPushTransactionAction*
 Executes the action to confirm the last received transaction; it is useful to implement or control the visualization of the Push transaction. 
 This method will receive as parameter the TransactionInfo object in order to identify what transaction confirm among all those received.
 This method receives 3 different parameters: 2 response callbacks and an TransactionInfo object.   
@@ -346,7 +425,7 @@ This method receives 3 different parameters: 2 response callbacks and an Transac
           console.log("failConfirmTransactionActionListener", failConfirmTransactionActionListener)
       }, transactionJson);
 
-##### *declinePushTransactionAction*
+#### *declinePushTransactionAction*
 This method executes the action to decline the received transaction; it is useful to implement or control the visualization of the Push transaction. 
 It the TransactionInfo object as parameter to identify what transaction will be declined among all receide transactions.
 This method receives 3 different parameters: 2 response callbacks and an TransactionInfo object.
@@ -359,7 +438,7 @@ This method receives 3 different parameters: 2 response callbacks and an Transac
           console.log("failDeclineTransactionActionListener", failDeclineTransactionActionListener)
       }, transactionJson);
 
-##### *setPushAuthenticationResponseAdditionalInfo*
+#### *setPushAuthenticationResponseAdditionalInfo*
 This method includes additional information to the Push authentication answer that is being being executed in the end-use's mobile device. 
 For example, if the secured entity wants to send the exact hour in which the Push authentication is being accepted or declined, that value can be sent as additional information. 
 This method receives Map kind collection called additionalinfo as a parameter, with the structure <key, value>. The values included in the additionalInfo field will be sent to DetectID to be consulted by the secured entity.
@@ -380,23 +459,22 @@ This method receives Map kind collection called additionalinfo as a parameter, w
           console.log("failSettingAdditionalInfo", failSettingAdditionalInfo)
       }, mappAdditionalInfo);
 
-##### *setPushAlertViewProperties*
+#### *setPushAlertViewProperties*
 This method updates the object that contains the configuration of texts and icons of Push notifications and QuickActions. This method receives 3 different parameters: 2 response callbacks and an alertViewProperties object.    
 ##### Syntax
-      setPushAlertViewProperties  : function (success, fail);
+      setPushAlertViewProperties  : function (success, fail, alertViewProperties);
 ##### Implementation
-      var alertViewProperties = {
-          "APPROVE": "Accept"
-      }
-      DetectIDCordovaPlugin.setPushAlertViewProperties (
-          function(success) {
-              console.log("onSuccess", success);
-          },
-          function(error) {
-              console.log("onError", error);
-          }, alertViewProperties);
+	  var alertViewProperties = {
+	  "APPROVE": "Accept"
+	  }
+
+	  DetectIDCordovaPlugin.setPushAlertViewProperties ( function(success) {
+	  ...
+	  }, function(error) {
+      ...
+	  }, alertViewProperties);
 	  
-##### *setPushAlertReceiveListener*
+#### *setPushAlertReceiveListener*
 This listener is executed every time a Push alert is received in the application; useful for the implementation of any additional functionalities when receiving the notification. 
 The listener will contain the information necessary to handle one or multiple received alerts. This method receives 2 different parameters: 2 response callbacks. 
 ##### Syntax
@@ -410,7 +488,7 @@ The listener will contain the information necessary to handle one or multiple re
               console.log("onError", error);
           });
 
-##### *setPushAlertOpenListener*
+#### *setPushAlertOpenListener*
 This listener is executed every time a Push alert is opened from the Notifications panel; useful when the company wants to implement any additional functionality when the notification opens. 
 This method receives 2 different parameters: 2 response callbacks. 
 ##### Syntax
@@ -424,12 +502,12 @@ This method receives 2 different parameters: 2 response callbacks.
               console.log("onError", error);
           });
 	  
-##### *approvePushAlert*
+#### *approvePushAlert*
 This method executes the action to approve the received alert, it is useful to implement or control the Push transaction visualization. 
 The listener will return a transactionJson object, which will contain the information necessary to handle one or multiple received alerts.
 This method receives 3 different parameters: 2 response callbacks and an transactionJson object.    
 ##### Syntax
-      approvePushAlert  : function (success, fail);
+      approvePushAlert  : function (success, fail, transactionJson);
 ##### Implementation
       var transactionJson = {
           ...
