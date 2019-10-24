@@ -214,7 +214,8 @@ In Android, it is necessary to use an external resource to use the camera of the
 		}
 
  - Add the following line of code to the gradle of the project:
-	classpath 'com.google.gms:google-services:4.3.0'
+ 
+		classpath 'com.google.gms:google-services:4.3.0'
 	
 ### Registration Response
 The success callbacks of both registration methods receive the response codes of the registration process. The list of response codes can be found below: 
