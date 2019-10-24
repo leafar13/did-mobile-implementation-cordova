@@ -10,7 +10,7 @@
 #import <didm_auth_sdk_iOS/didm_auth_sdk_iOS.h>
 
 @interface DIDPlugPushApi : CDVPlugin
-
+    
 - (void) setPushTransactionViewProperties:(CDVInvokedUrlCommand*)command;
 - (void) setPushAlertViewProperties:(CDVInvokedUrlCommand*)command;
 - (void) setPushTransactionServerResponseListener:(CDVInvokedUrlCommand*)command;

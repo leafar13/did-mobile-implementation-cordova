@@ -14,15 +14,13 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class DIDPlugOtpManager {
-
-    private static final String ACCOUNT = "account";
+class DIDPlugOtpManager {
 
     private DIDPlugOtpManager() {
 
     }
 
-    public static void getTokenValue(Context context, JSONArray args, CallbackContext callbackContext) throws IllegalArgumentException {
+    static void getTokenValue(Context context, JSONArray args, CallbackContext callbackContext) {
         try {
             Account account = getAccountFromJsonObject(args);
             String tokenValue = DetectID.sdk(context).OTP_API.getTokenValue(account);
@@ -32,7 +30,7 @@ public class DIDPlugOtpManager {
         }
     }
 
-    public static void updateTokenTimeStepValue(Context context, JSONArray args, CallbackContext callbackContext) throws IllegalArgumentException {
+    static void updateTokenTimeStepValue(Context context, JSONArray args, CallbackContext callbackContext) {
         try {
             Account account = getAccountFromJsonObject(args);
             DetectID.sdk(context).OTP_API.updateTokenLifetime(account);

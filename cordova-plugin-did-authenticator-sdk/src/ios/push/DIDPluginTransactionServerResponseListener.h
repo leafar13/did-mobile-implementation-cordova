@@ -10,6 +10,6 @@
 #import <didm_auth_sdk_iOS/didm_auth_sdk_iOS.h>
 
 @interface DIDPluginTransactionServerResponseListener : NSObject <PushTransactionServerResponseDelegate>
-
+@property (nonatomic, strong) NSString *myPushListenerCallbackId;
 - (instancetype)initWithCommand : (CDVInvokedUrlCommand *) command withPlugin:(CDVPlugin*) plugin;
 @end

@@ -19,7 +19,6 @@ public class DIDPluginTransactionServerResponseListener implements PushTransacti
     @Override
     public void onPushTransactionServerResponse(String response) {
         PluginResult result = new PluginResult(PluginResult.Status.OK, response);
-        result.setKeepCallback(true);
         callbackContext.sendPluginResult(result);
     }
 }

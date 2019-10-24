@@ -14,48 +14,47 @@
 #import <Cordova/CDVViewController.h>
 
 @implementation DIDPlugRegistrationApi
-{
-    __block DIDPlugRegistrationApi* pluginManager;
-    __block CDVInvokedUrlCommand *commandDeviceRegistrationServerResponseListener;
-}
-
+    {
+        __block DIDPlugRegistrationApi* pluginManager;
+        __block CDVInvokedUrlCommand *commandDeviceRegistrationServerResponseListener;
+    }
+    
 - (instancetype)init {
     if (self == [super init]){
     }
     return self;
 }
-
+    
 - (void) initDIDServerWithParams:(CDVInvokedUrlCommand*)command{
     [[DetectID sdk] enableRegistrationServerResponseAlerts:NO];
     __block CDVInvokedUrlCommand *commandBlock = command;
     [self initDIDServerWithParamsManager:commandBlock withPlugin:self];
 }
-
+    
 - (void) deviceRegistrationByCode:(CDVInvokedUrlCommand*)command{
     __block CDVInvokedUrlCommand *commandBlock = command;
     [self.commandDelegate runInBackground:^{
         [self deviceRegistrationByCodeManager:commandBlock withPlugin:self];
     }];
 }
-
+    
 - (void) deviceRegistrationByQRCode:(CDVInvokedUrlCommand*)command{
     __block CDVInvokedUrlCommand *commandBlock = command;
     [self deviceRegistrationByQRCodeManager:commandBlock withPlugin:self];
 }
-
+    
 - (void) setDeviceRegistrationServerResponseListener:(CDVInvokedUrlCommand*)command {
     [self setDeviceRegistrationServerResponseListenerManager:command withPlugin:self];
 }
-
+    
 -(void)onRegistrationResponse:(NSString*) result {
-    commandDeviceRegistrationServerResponseListener = pluginManager.commandDeviceRegistrationServerResponseListener;
-    [self.commandDelegate sendPluginResult:[pluginManager onRegistrationResponseManager:result withCommand:commandDeviceRegistrationServerResponseListener] callbackId:commandDeviceRegistrationServerResponseListener.callbackId];
+    [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus: CDVCommandStatus_OK messageAsString: result] callbackId: _myCallbackId];
 }
-
+    
 - (void) setRegistrationViewProperties:(CDVInvokedUrlCommand*)command{
     [self setRegistrationViewPropertiesManager:command withPlugin:self];
 }
-
+    
 - (void)initDIDServerWithParamsManager:(CDVInvokedUrlCommand*)command withPlugin:(DIDPlugRegistrationApi *)plugin{
     __block DIDPlugRegistrationApi* pluginBlock = plugin;
     
@@ -93,7 +92,7 @@
         [pluginBlock.commandDelegate sendPluginResult:pluginResultFail callbackId:command.callbackId];
     }
 }
-
+    
 - (void)displayDeviceRegistrationDialogManager:(CDVInvokedUrlCommand*)command withPlugin:(DIDPlugRegistrationApi *)plugin{
     __block DIDPlugRegistrationApi* pluginBlock = plugin;
     @try {
@@ -115,12 +114,14 @@
         NSLog(ERROR_CALLING_DEFAULT_REGISTRATION_DIALOG);
     }
 }
-
+    
 - (void)deviceRegistrationByCodeManager:(CDVInvokedUrlCommand*)command withPlugin:(DIDPlugRegistrationApi *)plugin{
-    __block DIDPlugRegistrationApi* pluginBlock = plugin;
+    __block DIDPlugRegistrationApi *pluginBlock = plugin;
     @try {
-        __block CDVPluginResult* pluginResult;
-        __block CDVInvokedUrlCommand* commandBlock = command;
+        __block CDVPluginResult *pluginResult;
+        __block CDVInvokedUrlCommand *commandBlock = command;
+        self.myCallbackId = command.callbackId;
+        
         DIDPlugRegistrationApi * __weak weakSelf = self;
         [self validateInputParams:[NSDictionary class] withSize:1 withCommand:command completion:^(NSException *exception) {
             if (exception) {
@@ -129,11 +130,10 @@
                 NSString *code=[[commandBlock.arguments objectAtIndex:0] valueForKeyPath:CODE_KEY];
                 if ([weakSelf validateNullString:code]) {
                     @throw [[DIDPlugExceptionsHelper new] nullParameterException];
-                } else {
-                    [[DetectID sdk] deviceRegistrationByCode:code];
-                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:TRUE];
-                    [pluginBlock.commandDelegate sendPluginResult:pluginResult callbackId:commandBlock.callbackId];
-                    NSLog(SUCCESS_PROCESS);
+                }else{
+                     [pluginResult setKeepCallbackAsBool: NO];
+                     [[DetectID sdk] deviceRegistrationByCode:code];
+                     NSLog(SUCCESS_PROCESS);
                 }
             }
         }];
@@ -142,20 +142,21 @@
         [pluginBlock.commandDelegate sendPluginResult:pluginResultFail callbackId:command.callbackId];
     }
 }
-
+    
 - (void)deviceRegistrationByQRCodeManager:(CDVInvokedUrlCommand*)command withPlugin:(DIDPlugRegistrationApi *)plugin {
     __block DIDPlugRegistrationApi* pluginBlock = plugin;
     @try {
         __block CDVPluginResult* pluginResult;
         __block CDVInvokedUrlCommand* commandBlock = command;
+        self.myCallbackId = command.callbackId;
+        
         DIDPlugRegistrationApi * __weak weakSelf = self;
         [self validateInputParams:[NSDictionary class] withSize:1 withCommand:command completion:^(NSException *exception) {
             if (exception) {
                 @throw exception;
-            } else {
+            }else{
+                [pluginResult setKeepCallbackAsBool: NO];
                 [[DetectID sdk] deviceRegistrationByQRCode: self.viewController];
-                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsBool:TRUE];
-                [pluginBlock.commandDelegate sendPluginResult:pluginResult callbackId:commandBlock.callbackId];
                 NSLog(SUCCESS_PROCESS);
             }
         }];
@@ -164,7 +165,7 @@
         [pluginBlock.commandDelegate sendPluginResult:pluginResultFail callbackId:command.callbackId];
     }
 }
-
+    
 - (void)setDeviceRegistrationServerResponseListenerManager:(CDVInvokedUrlCommand*)command withPlugin:(DIDPlugRegistrationApi *)plugin {
     __block DIDPlugRegistrationApi* pluginBlock = plugin;
     @try {
@@ -175,9 +176,11 @@
                 @throw exception;
             } else {
                 pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT];
-                _commandDeviceRegistrationServerResponseListener = commandBlock;
-                [[DetectID sdk]  setDeviceRegistrationServerResponseDelegate:pluginBlock];
-                [pluginResult setKeepCallbackAsBool:YES];
+               // _commandDeviceRegistrationServerResponseListener = commandBlock;
+                [pluginResult setKeepCallbackAsBool: NO];
+                [[DetectID sdk] setDeviceRegistrationServerResponseDelegate: pluginBlock];
+                [[DetectID sdk] enableRegistrationServerResponseAlerts: false];
+                
                 [pluginBlock.commandDelegate sendPluginResult:pluginResult callbackId:commandBlock.callbackId];
                 NSLog(SUCCESS_PROCESS);
             }
@@ -188,9 +191,10 @@
         NSLog(ERROR_CALLING_REGISTRATION_RESPONSE_DELEGATE);
     }
 }
-
+    
 - (CDVPluginResult*)onRegistrationResponseManager:(NSString *)result withCommand:(CDVInvokedUrlCommand *)commandDeviceRegistrationServerResponseListener {
-    CDVPluginResult* pluginResult = nil;
+    CDVPluginResult *pluginResult = nil;
+    
     if(commandDeviceRegistrationServerResponseListener != nil){
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:result];
         NSLog(SUCCESS_PROCESS);
@@ -198,10 +202,10 @@
         pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:ERROR_REGISTRATION_RESPONSE_DELEGATE_NULL];
         NSLog(ERROR_REGISTRATION_RESPONSE_DELEGATE_NULL);
     }
-    [pluginResult setKeepCallbackAsBool:YES];
+    
     return pluginResult;
 }
-
+    
 - (void) setRegistrationViewPropertiesManager:(CDVInvokedUrlCommand*)command withPlugin:(DIDPlugRegistrationApi *)plugin{
     __block DIDPlugRegistrationApi* pluginBlock = plugin;
     @try {
@@ -248,8 +252,8 @@
         [pluginBlock.commandDelegate sendPluginResult:pluginResultFail callbackId:command.callbackId];
     }
 }
-
-
+    
+    
 - (void)validateInputParams:(Class) aClass withSize:(NSUInteger) size withCommand:(CDVInvokedUrlCommand*)command completion:(void (^)(NSException *exception)) completion {
     if (command.arguments) {
         if ([command.arguments count] == size) {
@@ -270,8 +274,8 @@
         completion([[DIDPlugExceptionsHelper new] nullParameterException]);
     }
 }
-
+    
 - (BOOL)validateNullString:(NSString *) string {
     return [string isEqual:@"null"] || [string isEqual:[NSNull null]] || string ==nil;
 }
-@end
+    @end

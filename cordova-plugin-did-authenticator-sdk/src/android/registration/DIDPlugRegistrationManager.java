@@ -52,6 +52,9 @@ public class DIDPlugRegistrationManager {
                 .build();
         DetectID.sdk(context).initDIDServerWithParams(initParams);
 
+        DetectID.sdk(context).PUSH_API.enablePushAlertDefaultDialog(false);
+        DetectID.sdk(context).PUSH_API.enablePushTransactionDefaultDialog(false);
+
         callbackContext.success();
     }
 
@@ -63,15 +66,16 @@ public class DIDPlugRegistrationManager {
         JSONObject jsonDevicerRegistrationByCode = args.getJSONObject(0);
         String code = jsonDevicerRegistrationByCode.getString(CODE);
         if (code != null) {
+            DetectID.sdk(myContext).setDeviceRegistrationServerResponseListener(new DIDPluginRegistrationServerResponseListener(callbackContext));
             DetectID.sdk(myContext).deviceRegistrationByCode(code);
-            callbackContext.success();
-        } else
+        } else {
             callbackContext.error(CODE_IS_NULL);
+        }
     }
 
     public static void setDeviceRegistrationByQrCode(Context myContext, JSONArray args, CallbackContext callbackContext) throws JSONException {
+        DetectID.sdk(myContext).setDeviceRegistrationServerResponseListener(new DIDPluginRegistrationServerResponseListener(callbackContext));
         DetectID.sdk(myContext).deviceRegistrationByQRCode();
-        callbackContext.success();
     }
 
     public static void displayDeviceRegistration(Context myContext, CallbackContext callbackContext) throws JSONException {

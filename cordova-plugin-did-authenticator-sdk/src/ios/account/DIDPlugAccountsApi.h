@@ -13,6 +13,10 @@
 
 @interface DIDPlugAccountsApi: CDVPlugin
 
-- (void)getAccounts:(CDVInvokedUrlCommand*)command;
+- (void)getAccounts:(CDVInvokedUrlCommand*) command;
+
+- (void)removeAccount:(CDVInvokedUrlCommand*) command;
+
+- (void)setAccountUsername:(CDVInvokedUrlCommand*) command;
 
 @end

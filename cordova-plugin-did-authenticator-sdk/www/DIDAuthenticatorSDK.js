@@ -22,7 +22,7 @@ var DetectIDCordovaPlugin={
 	setPushTransactionViewProperties : function(success, fail, pushTransactionViewProperties){
 	    exec(success, fail, "DIDPlugPushApi", "setPushTransactionViewProperties", ["" + JSON.stringify(pushTransactionViewProperties)]);
 	},
-	setPushTransactionServerResponseListener : function(success, fail){
+	setPushQuickActionServerResponseListener : function(success, fail){
 	    exec(success, fail, "DIDPlugPushApi", "setPushTransactionServerResponseListener", []);
 	},
 	setPushTransactionReceiveListener : function(success, fail){
@@ -63,7 +63,15 @@ var DetectIDCordovaPlugin={
 	},
 	getTokenValue: function(success, fail, account) {
 		exec(success, fail, "DIDPlugOtpApi", "getTokenValue", [account]);
+	},
+	removeAccount: function(success, fail, account){
+		exec(success, fail, "DIDPlugAccountsApi", "removeAccount", [{"currentAccount": account }]);
+	},
+	setAccountUsername: function (success, fail, username, account){
+		exec(success, fail, "DIDPlugAccountsApi", "setAccountUsername", [{"username": username, "currentAccount": account }]);
 	}
+
+
 };
 
 module.exports = DetectIDCordovaPlugin;

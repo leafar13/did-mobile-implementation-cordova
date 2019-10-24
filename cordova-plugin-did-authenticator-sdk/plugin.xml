@@ -7,8 +7,8 @@
     <name>DetectIDAuthenticator</name>
     <description>DetectID Authenticator SDK plugin cordova for Android, iOS platforms</description>
     <license>Apache 2.0</license>
-    <keywords>didauthenticator,did,easysol,Cyxtera, Android,iOS, cordova</keywords>
-    <author>Cyxtera, Inc.</author>
+    <keywords>didauthenticator,did,easysol,Easy Solutions, Android,iOS, cordova</keywords>
+    <author>Easy Solutions, Inc.</author>
 
     <!--supported versions-->
     <engines>
@@ -346,7 +346,9 @@
         </config-file>
 
         <!-- DID Plugin API -->
-         <source-file src="src/android/DIDServerURL.java"
+        <source-file src="src/android/proguard-rules.pro"
+                     target-dir="../../"/>
+        <source-file src="src/android/DIDServerURL.java"
                      target-dir="src/net/easysol/did/DetectIDCordovaPlugin"/>
         <source-file src="src/android/DetectIDCordovaPlugin.java"
                      target-dir="src/net/easysol/did/DetectIDCordovaPlugin"/>
@@ -373,8 +375,6 @@
                      target-dir="src/net/easysol/did/DetectIDCordovaPlugin/push"/>
         <source-file src="src/android/push/DIDPlugPushAlertManager.java"
                      target-dir="src/net/easysol/did/DetectIDCordovaPlugin/push"/>
-        <source-file src="src/android/DIDApplication.java"
-                     target-dir="src/net/easysol/did/DetectIDCordovaPlugin/"/>
         <!-- Listeners -->
         <source-file src="src/android/listeners/DIDPluginPushAlertOpenListener.java"
                      target-dir="src/net/easysol/did/DetectIDCordovaPlugin/listeners"/>
@@ -382,6 +382,7 @@
                      target-dir="src/net/easysol/did/DetectIDCordovaPlugin/listeners"/>
         <source-file src="src/android/listeners/DIDPluginRegistrationServerResponseListener.java"
                      target-dir="src/net/easysol/did/DetectIDCordovaPlugin/listeners"/>
+
 
         <source-file src="src/android/listeners/DIDPluginTransactionOpenListener.java"
                      target-dir="src/net/easysol/did/DetectIDCordovaPlugin/listeners"/>
@@ -393,41 +394,12 @@
 
         <framework custom="true" src="src/android/build-extras.gradle" type="gradleReference"/>
 
-        <resource-file src="libs/android/shortcut-1.0.0.aar" target="libs/shortcut-1.0.0.aar"/>
-
-        <lib-file src="libs/android/did-data-7.3.1.jar"/>
-        <lib-file src="libs/android/didm_authenticator_sdk_v7.3.1.jar"/>
-        <lib-file src="libs/android/did-tokens-7.3.1.jar"/>
-        <lib-file src="libs/android/did-encryptor-7.3.1.jar"/>
+        <lib-file src="libs/android/did-data-7.3.2.aar"/>
+        <lib-file src="libs/android/didm_authenticator_sdk_v7.3.2.jar"/>
+        <lib-file src="libs/android/did-tokens-7.3.2.aar"/>
+        <lib-file src="libs/android/did-encryptor-7.3.2.aar"/>
         <lib-file src="libs/android/mobile-commons-1.0.0.aar"/>
         <lib-file src="libs/android/shortcut-1.0.0.aar"/>
-        <lib-file src="libs/android/dagger-2.16.jar"/>
-        <lib-file src="libs/android/javax.inject-1.jar"/>
-
-        <framework src="com.android.support:appcompat-v7:28.0.0" />
-        <framework src="com.android.support:design:28.0.0" />
-
-        <framework src="com.android.support:support-v4:28.0.0" />
-        <framework src="com.android.support:mediarouter-v7:28.0.0" />
-        <framework src="com.android.support:animated-vector-drawable:28.0.0" />
-
-        <framework src="com.android.support:cardview-v7:28.0.0" />
-
-        <framework src="com.android.support.constraint:constraint-layout:1.1.3" />
-
-        <framework src="com.android.support:multidex:1.0.3" />
-
-        <framework src="com.google.android.gms:play-services:11.8.0" />
-        <framework src="com.google.firebase:firebase-core:11.8.0" />
-
-        <framework src="com.google.code.gson:gson:2.8.5" />
-
-        <framework src="io.reactivex.rxjava2:rxandroid:2.1.1" />
-        <framework src="io.reactivex.rxjava2:rxjava:2.2.6" />
-
-        <framework src="com.squareup.retrofit2:retrofit:2.5.0" />
-        <framework src="com.squareup.retrofit2:converter-gson:2.5.0" />
-        <framework src="com.squareup.okhttp3:logging-interceptor:3.11.0" />
 
     </platform>
 </plugin>

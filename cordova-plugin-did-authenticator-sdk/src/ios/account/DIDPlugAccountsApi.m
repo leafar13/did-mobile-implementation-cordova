@@ -47,4 +47,45 @@
     }
 }
 
+- (void)removeAccount:(CDVInvokedUrlCommand*) command{
+    __block DIDPlugAccountsApi* pluginBlock = self;
+    @try{
+        __block CDVPluginResult* pluginResult;
+        __block CDVInvokedUrlCommand* commandBlock = command;
+
+        Account *account = [DIDPlugHelper convertJsonToAccount: [[commandBlock.arguments objectAtIndex:0] valueForKeyPath: @"currentAccount"]];
+
+        [[DetectID sdk] removeAccount: account];
+
+        pluginResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK messageAsBool: TRUE];
+        [pluginBlock.commandDelegate sendPluginResult:pluginResult callbackId:commandBlock.callbackId];
+
+    }@catch(NSException *ex) {
+        CDVPluginResult *pluginResultFail = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[DIDPlugExceptionsHelper pluginExceptionHandler:ex]];
+        [pluginBlock.commandDelegate sendPluginResult:pluginResultFail callbackId:command.callbackId];
+    }
+}
+
+- (void)setAccountUsername:(CDVInvokedUrlCommand*) command{
+    __block DIDPlugAccountsApi* pluginBlock = self;
+
+    @try{
+         __block CDVPluginResult* pluginResult;
+         __block CDVInvokedUrlCommand* commandBlock = command;
+
+        NSString *username = [[commandBlock.arguments objectAtIndex:0] valueForKeyPath:@"username"];
+        Account *account = [DIDPlugHelper convertJsonToAccount: [[commandBlock.arguments objectAtIndex:0] valueForKeyPath: @"currentAccount"]];
+
+
+        [[DetectID sdk] setAccountUsername: username forAccount: account];
+
+        pluginResult = [CDVPluginResult resultWithStatus: CDVCommandStatus_OK messageAsBool: TRUE];
+        [pluginBlock.commandDelegate sendPluginResult:pluginResult callbackId:commandBlock.callbackId];
+
+    }@catch(NSException *ex) {
+        CDVPluginResult *pluginResultFail = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[DIDPlugExceptionsHelper pluginExceptionHandler:ex]];
+        [pluginBlock.commandDelegate sendPluginResult:pluginResultFail callbackId:command.callbackId];
+    }
+}
+
 @end
