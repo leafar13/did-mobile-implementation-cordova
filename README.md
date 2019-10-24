@@ -199,7 +199,8 @@ In Android, it is necessary to use an external resource to use the camera of the
  - Plugin name: cordova-plugin-android-permissions
  - Plugin link: https://www.npmjs.com/package/cordova-plugin-permission
  - Implementation JavaScript: This implementation code must be implemented only once when initializing the application: 
-	var permissions = cordova.plugins.permissions;
+ 
+		var permissions = cordova.plugins.permissions;
 		permissions.requestPermission(permissions.CAMERA, success, error);
 
 		function error() {
