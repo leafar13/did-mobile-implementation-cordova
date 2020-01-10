@@ -1,4 +1,4 @@
-![Cyxtera_logo](img/cyxtera-header.png)
+![Cyxtera_logo](img/appgate-header.png)
 # DetectID-SDK: Cordova Integration
 
 [Description](#desc)
@@ -7,7 +7,7 @@
 
 [DetectID-SDK Integration](#SDK-int)
 
-## Disclaimer
+# Disclaimer
 © 2019, Cyxtera Cybersecurity, Inc. d/b/a AppGate.  All rights reserved.  
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met: (a) redistributions of source code must retain the above copyright notice, this list of conditions and the disclaimer below, and (b) redistributions in binary form must reproduce the above copyright notice, this list of conditions and the disclaimer below in the documentation and/or other materials provided with the distribution. 
